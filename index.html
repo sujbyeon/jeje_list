@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재개발 구역 매물 리스트</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+<style>
+:root { --brand-gold: #A78569; --brand-navy: #022136; --apple-bg: #f5f5f7; }
+* { box-sizing: border-box; }
+body { font-family: "Pretendard Variable", sans-serif; background-color: var(--apple-bg); color: var(--brand-navy); margin: 0; padding: 40px 20px; }
+header { text-align: center; margin-bottom: 40px; }
+header h1 { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+header p { color: var(--brand-gold); font-weight: 600; margin: 0; }
+.controls { max-width: 1200px; margin: 0 auto 30px; text-align: center; }
+.filter-tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px; }
+.tab-btn { padding: 10px 20px; border-radius: 50px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 600; font-family: inherit; font-size: 14px; transition: all 0.2s; }
+.tab-btn:hover { border-color: var(--brand-gold); color: var(--brand-gold); }
+.tab-btn.active { background: var(--brand-gold); color: white; border-color: var(--brand-gold); }
+.sort-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; }
+.sort-btn { padding: 8px 18px; border-radius: 50px; border: 1px solid #ddd; background: white; cursor: pointer; font-weight: 600; font-family: inherit; font-size: 13px; transition: all 0.2s; }
+.sort-btn:hover { border-color: var(--brand-gold); color: var(--brand-gold); }
+.sort-btn.active { background: var(--brand-navy); color: white; border-color: var(--brand-navy); }
+.search-input { width: 100%; max-width: 400px; padding: 14px 24px; border-radius: 15px; border: 1px solid rgba(167,133,105,0.3); outline: none; font-family: inherit; font-size: 15px; }
+.search-input:focus { border-color: var(--brand-gold); }
+.result-count { max-width: 1200px; margin: 0 auto 16px; font-size: 14px; color: #888; text-align: right; padding: 0 4px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto; }
+.card { background: white; border-radius: 24px; padding: 30px; border: 1px solid rgba(167,133,105,0.15); box-shadow: 0 4px 20px rgba(0,0,0,0.04); display: flex; flex-direction: column; transition: all 0.25s; }
+.card:hover { box-shadow: 0 10px 36px rgba(0,0,0,0.10); transform: translateY(-3px); }
+.card-tag { font-size: 12px; color: var(--brand-gold); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.card-title { font-size: 16px; font-weight: 700; margin: 6px 0 2px; }
+.price { font-size: 28px; font-weight: 800; margin: 6px 0 4px; color: var(--brand-navy); }
+.card-meta { font-size: 13px; color: #888; margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.meta-chip { background: #f5f5f7; border-radius: 8px; padding: 3px 10px; }
+.desc { font-size: 14px; color: #555; margin: 10px 0 16px; flex-grow: 1; line-height: 1.7; white-space: pre-wrap; }
+.hashtags { font-size: 12px; color: #aaa; margin-bottom: 18px; }
+.btn-group { display: flex; gap: 10px; }
+.btn { flex: 1; padding: 13px; border-radius: 12px; text-align: center; text-decoration: none; font-weight: 700; font-size: 14px; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.75; }
+.btn-main { background: var(--brand-navy); color: white; }
+.btn-sub { background: #f0f0f2; color: #555; }
+.status-msg { text-align: center; grid-column: 1/-1; padding: 80px 20px; color: #aaa; font-size: 16px; }
+.spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #ddd; border-top-color: var(--brand-gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-box { max-width: 600px; margin: 0 auto; background: #fff5f5; border: 1.5px solid #f5c6c6; border-radius: 16px; padding: 24px 28px; font-size: 14px; line-height: 1.8; color: #c0392b; }
+.error-box code { background: #f8ecec; padding: 2px 6px; border-radius: 5px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>재개발 매물 리스트</h1>
+  <p>26년 2월 17일 수집 내역</p>
+</header>
+<div class="controls">
+  <div class="filter-tabs" id="filterTabs">
+    <button class="tab-btn active" data-district="전체">전체</button>
+  </div>
+  <div class="sort-tabs" id="sortTabs">
+    <button class="sort-btn active" data-sort="none">기본순</button>
+    <button class="sort-btn" data-sort="price-asc">낮은 가격순</button>
+    <button class="sort-btn" data-sort="price-desc">높은 가격순</button>
+    <button class="sort-btn" data-sort="area-desc">넓은 면적순</button>
+  </div>
+  <input type="text" id="searchInput" class="search-input" placeholder="키워드로 매물 검색...">
+</div>
+<div class="result-count" id="resultCount"></div>
+<div class="grid" id="listingGrid">
+  <div class="status-msg">
+    <div class="spinner"></div><br>데이터를 불러오는 중입니다...
+  </div>
+</div>
+<script>
+var SHEET_ID = '1kop_qWYOEQ4VWB7f-IWaGnrt0kwguCzjTnEBR4FtDKk';
+var TAB_NAME = 'LIST';
+var allData = [];
+var currentDistrict = '전체';
+var currentSort = 'none';
+
+function fetchData() {
+  var old = document.getElementById('gviz-script');
+  if (old) old.remove();
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
+            '/gviz/tq?tqx=out:json;responseHandler:gvizCallback&sheet=' +
+            encodeURIComponent(TAB_NAME);
+  var script = document.createElement('script');
+  script.id = 'gviz-script';
+  script.src = url;
+  script.onerror = function() {
+    showError('스크립트 로드 실패 — 스프레드시트 공유 설정(링크 공개 뷰어)을 확인해 주세요.');
+  };
+  document.body.appendChild(script);
+}
+
+window.gvizCallback = function(response) {
+  try {
+    var table = response.table;
+    if (!table || !table.rows || table.rows.length === 0) {
+      showError('시트에서 데이터를 찾을 수 없습니다.');
+      return;
+    }
+    var cols = table.cols;
+    var numCols = ['거래가(숫자)', '공급', '전용'];
+    allData = table.rows.map(function(row) {
+      var obj = {};
+      row.c.forEach(function(cell, i) {
+        var label = (cols[i] && cols[i].label) ? cols[i].label.trim() : ('col' + i);
+        if (cell) {
+          if (numCols.indexOf(label) !== -1) {
+            obj[label] = (cell.v != null) ? cell.v : '';
+          } else {
+            obj[label] = (cell.f != null) ? cell.f : (cell.v != null ? cell.v : '');
+          }
+        } else {
+          obj[label] = '';
+        }
+      });
+      return obj;
+    });
+    console.log(allData.map(function(i){ return i['거래가(숫자)']; })); // 임시 확인용
+    buildFilters();
+    renderListings(allData);
+  } catch(e) {
+    showError('데이터 파싱 오류: ' + e.message);
+  }
+};
+
+function buildFilters() {
+  var districts = [];
+  allData.forEach(function(item) {
+    if (item['구역명'] && districts.indexOf(item['구역명']) === -1) districts.push(item['구역명']);
+  });
+  var container = document.getElementById('filterTabs');
+  container.querySelectorAll('button:not([data-district="전체"])').forEach(function(b) { b.remove(); });
+  districts.forEach(function(d) {
+    var btn = document.createElement('button');
+    btn.className = 'tab-btn';
+    btn.dataset.district = d;
+    btn.textContent = d;
+    container.appendChild(btn);
+  });
+  container.onclick = function(e) {
+    if (!e.target.matches('.tab-btn')) return;
+    container.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    e.target.classList.add('active');
+    currentDistrict = e.target.dataset.district;
+    applyFilters();
+  };
+}
+
+document.getElementById('sortTabs').onclick = function(e) {
+  if (!e.target.matches('.sort-btn')) return;
+  document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active'); });
+  e.target.classList.add('active');
+  currentSort = e.target.dataset.sort;
+  applyFilters();
+};
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toNum(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  return parseFloat(String(val).replace(/,/g, '').replace(/\s/g, '')) || 0;
+}
+
+function renderListings(data) {
+  // ✅ 매물 개수 표시
+  document.getElementById('resultCount').innerText = '총 ' + data.length + '개 매물';
+
+  var grid = document.getElementById('listingGrid');
+  if (data.length === 0) {
+    grid.innerHTML = '<p class="status-msg">조건에 맞는 매물이 없습니다.</p>';
+    return;
+  }
+  grid.innerHTML = data.map(function(item) {
+    var detailHref = item['상세보기'] || '#';
+    var mapHref    = item['위치보기'] || '#';
+
+    var onePlusOne = item['1+1 가능'] ? String(item['1+1 가능']).trim() : '';
+    var onePlusOneHtml = onePlusOne
+      ? '<span>1+1 ' + esc(onePlusOne) + '</span>'
+      : '';
+
+    var chips = [];
+    var areaInfo = '';
+    if (item['공급']) areaInfo += '공급 ' + item['공급'];
+    if (item['전용']) areaInfo += (areaInfo ? ' / ' : '') + '전용 ' + item['전용'];
+    if (areaInfo) chips.push(areaInfo);
+
+    var chipsHtml = chips.map(function(c) {
+      return '<span class="meta-chip">' + esc(c) + '</span>';
+    }).join('');
+
+    return '<div class="card">' +
+      '<div class="card-tag">' +
+        '<span>' + esc(item['구역명']||'') + '</span>' +
+        onePlusOneHtml +
+      '</div>' +
+      '<div class="card-title">' + esc(item['물건명']||'') + '</div>' +
+      '<div class="price">' + esc(item['거래가']||'가격 문의') + '</div>' +
+      (chipsHtml ? '<div class="card-meta">' + chipsHtml + '</div>' : '') +
+      '<div class="desc">' + esc(item['물건설명']||'') + '</div>' +
+      '<div class="hashtags">' + esc(item['태그']||'') + '</div>' +
+      '<div class="btn-group">' +
+        '<a href="' + esc(detailHref) + '" target="_blank" rel="noopener" class="btn btn-main">상세보기</a>' +
+        '<a href="' + esc(mapHref) + '" target="_blank" rel="noopener" class="btn btn-sub">위치보기</a>' +
+      '</div></div>';
+  }).join('');
+}
+
+function applyFilters() {
+  var term = document.getElementById('searchInput').value.toLowerCase();
+  var filtered = allData;
+
+  if (currentDistrict !== '전체') {
+    filtered = filtered.filter(function(i) { return i['구역명'] === currentDistrict; });
+  }
+  if (term) {
+    filtered = filtered.filter(function(i) {
+      return (i['물건명']   && i['물건명'].toLowerCase().indexOf(term)   !== -1) ||
+             (i['물건설명'] && i['물건설명'].toLowerCase().indexOf(term) !== -1) ||
+             (i['태그']     && i['태그'].toLowerCase().indexOf(term)     !== -1) ||
+             (i['구역명']   && i['구역명'].toLowerCase().indexOf(term)   !== -1) ||
+             (i['주소']     && i['주소'].toLowerCase().indexOf(term)     !== -1);
+    });
+  }
+
+  if (currentSort === 'price-asc') {
+    filtered = filtered.slice().sort(function(a, b) {
+      return toNum(a['거래가(숫자)']) - toNum(b['거래가(숫자)']);
+    });
+  } else if (currentSort === 'price-desc') {
+    filtered = filtered.slice().sort(function(a, b) {
+      return toNum(b['거래가(숫자)']) - toNum(a['거래가(숫자)']);
+    });
+  } else if (currentSort === 'area-desc') {
+    filtered = filtered.slice().sort(function(a, b) {
+      return toNum(b['공급']) - toNum(a['공급']);
+    });
+  }
+
+  renderListings(filtered);
+}
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+function showError(msg) {
+  document.getElementById('listingGrid').innerHTML =
+    '<div class="error-box" style="grid-column:1/-1;"><strong>데이터 로드 실패</strong><br><br>' + msg + '<br><br>' +
+    '<strong>체크리스트</strong><br>' +
+    '1. 공유 설정: <code>링크가 있는 모든 사용자 → 뷰어</code><br>' +
+    '2. 시트 탭 이름이 <code>LIST</code>와 정확히 일치하는지 확인<br>' +
+    '3. 1행 헤더 확인: 구역명 / 물건번호 / 물건명 / 부동산유형 / 거래가 / 거래가(숫자) / 공급 / 전용 / 1+1 가능 / 방향 / 층수 / 주소 / 중개인명 / 물건설명 / 태그 / 상세보기 / 위치보기 / 지도' +
+    '</div>';
+}
+
+fetchData();
+</script>
+</body>
+</html>
