@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>재개발 구역 매물 List</title>
+    
+    <!-- SEO 및 공유 메타 태그 -->
+    <meta name="description" content="서울·경기 재개발 구역 매물 분석 대시보드">
+    <meta name="keywords" content="재개발, 재건축, 부동산, 매물, 투자">
+    
+    <!-- Open Graph (카카오톡, 페이스북 등) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="재개발 구역 매물 분석">
+    <meta property="og:description" content="서울·경기 재개발 구역 매물 분석 대시보드">
+    <meta property="og:site_name" content="재개발 매물 분석">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="재개발 구역 매물 분석">
+    <meta name="twitter:description" content="서울·경기 재개발 구역 매물 분석 대시보드">
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { 
@@ -76,6 +92,68 @@
         .badge-info-btn:hover {
             border-color: var(--brand-navy);
             color: var(--brand-navy);
+        }
+
+        /* 광고 배너 */
+        .ad-banner {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--brand-gold);
+            padding: 16px 24px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .ad-item-banner {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.2s ease;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .ad-item-banner:hover {
+            background: rgba(167, 133, 105, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .ad-label-banner {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .ad-content-banner {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--brand-navy);
+        }
+
+        @media (max-width: 768px) {
+            .ad-banner {
+                gap: 16px;
+                padding: 12px 16px;
+            }
+
+            .ad-item-banner {
+                padding: 6px 12px;
+            }
+
+            .ad-label-banner {
+                font-size: 10px;
+            }
+
+            .ad-content-banner {
+                font-size: 13px;
+            }
         }
 
         /* 지역 탭 */
@@ -672,6 +750,22 @@
             <div class="subtitle" id="dateSubtitle">데이터 로딩 중...</div>
             <button class="badge-info-btn" onclick="openModal()">아이콘 의미 📖</button>
         </header>
+
+        <!-- 광고 배너 -->
+        <div class="ad-banner">
+            <a href="https://blog.naver.com/chachalacha" target="_blank" class="ad-item-banner">
+                <div class="ad-label-banner">제작</div>
+                <div class="ad-content-banner">수잔의 블로그</div>
+            </a>
+            <a href="https://blog.naver.com/po-tax/222638285211" target="_blank" class="ad-item-banner">
+                <div class="ad-label-banner">재개발 전문 세무상담</div>
+                <div class="ad-content-banner">⚖️ 세무회계 평온</div>
+            </a>
+            <a href="https://contents.premium.naver.com/jejeguide/jejemvp" target="_blank" class="ad-item-banner">
+                <div class="ad-label-banner">프리미엄 매물 분석</div>
+                <div class="ad-content-banner">📈 재개발 재건축 추천매물 스터디</div>
+            </a>
+        </div>
 
         <div class="controls">
             <div class="region-tabs" id="regionTabs">
