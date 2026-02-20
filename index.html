@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INVEST ANALYSIS - Professional Dashboard</title>
+    <title>재개발 구역 매물 List</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
         :root { 
@@ -36,7 +36,7 @@
             margin: 0 auto; 
         }
 
-        /* 헤더 - 심플하게 */
+        /* 헤더 */
         header { 
             text-align: left;
             margin-bottom: 50px;
@@ -59,7 +59,6 @@
             margin: 0;
         }
 
-        /* 배지 설명 버튼 */
         .badge-info-btn {
             position: absolute;
             top: 0;
@@ -77,6 +76,80 @@
         .badge-info-btn:hover {
             border-color: var(--brand-navy);
             color: var(--brand-navy);
+        }
+
+        /* 지역 탭 */
+        .region-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .region-btn {
+            padding: 10px 24px;
+            border: 2px solid var(--border);
+            background: var(--card-bg);
+            cursor: pointer;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text-sub);
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .region-btn.active {
+            background: var(--brand-navy);
+            color: #FFFFFF;
+            border-color: var(--brand-navy);
+        }
+
+        /* 주소 툴팁 */
+        .address-icon {
+            font-size: 14px;
+            color: var(--text-sub);
+            cursor: help;
+            position: relative;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .address-icon:hover::after {
+            content: attr(data-address);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--brand-navy);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 100;
+            margin-bottom: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .address-icon:hover::before {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: var(--brand-navy);
+            margin-bottom: 2px;
+        }
+
+        /* 물건설명 */
+        .description {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 4px;
+            line-height: 1.5;
         }
 
         /* 모달 */
@@ -181,62 +254,7 @@
             font-family: 'Monaco', 'Courier New', monospace;
         }
 
-        /* 구역 통계 모달 */
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            background: #f8f9fa;
-            padding: 16px;
-            border-left: 3px solid var(--brand-gold);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-sub);
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--brand-navy);
-        }
-
-        .stat-value.small {
-            font-size: 16px;
-        }
-
-        .stat-full {
-            grid-column: 1 / -1;
-        }
-
-        @media (max-width: 768px) {
-            .badge-info-btn {
-                position: static;
-                margin-top: 12px;
-                display: inline-block;
-            }
-
-            .modal-content {
-                padding: 24px;
-            }
-
-            .stat-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stat-full {
-                grid-column: 1;
-            }
-        }
-
-        /* 검색 및 필터 - 직선적 */
+        /* 검색 및 필터 */
         .controls { 
             background: var(--card-bg);
             padding: 20px; 
@@ -359,20 +377,7 @@
             color: var(--border);
         }
 
-        @media (max-width: 768px) {
-            .stats-banner {
-                gap: 12px;
-                padding: 12px 16px;
-                font-size: 13px;
-            }
-
-            .stats-banner .zone-name {
-                font-size: 15px;
-                flex-basis: 100%;
-            }
-        }
-
-        /* 매물 카드 - 절제된 디자인 */
+        /* 매물 카드 */
         .grid { 
             display: grid; 
             gap: 12px;
@@ -450,7 +455,7 @@
             line-height: 1.4;
         }
 
-        /* 가격 정보 - 단순화 */
+        /* 가격 정보 */
         .price-box { 
             text-align: right; 
             padding: 12px 18px;
@@ -474,7 +479,7 @@
             font-weight: 600;
         }
 
-        /* 버튼 영역 - 직선적 */
+        /* 버튼 영역 */
         .action-box { 
             display: flex; 
             flex-direction: column; 
@@ -518,7 +523,7 @@
             color: var(--brand-navy);
         }
 
-        /* 배지 - 텍스트만 */
+        /* 배지 */
         .badge { 
             font-size: 12px; 
             font-weight: 800; 
@@ -537,14 +542,6 @@
             color: #9333ea;
         }
 
-        /* 구분선 효과 */
-        .section-divider {
-            height: 1px;
-            background: linear-gradient(to right, var(--brand-gold), transparent);
-            opacity: 0.15;
-            margin: 50px 0 30px 0;
-        }
-
         /* 모바일 최적화 */
         @media (max-width: 768px) {
             body {
@@ -554,6 +551,21 @@
             header {
                 margin-bottom: 30px;
             }
+
+            .badge-info-btn {
+                position: static;
+                margin-top: 12px;
+                display: inline-block;
+            }
+
+            .region-tabs {
+                gap: 8px;
+            }
+
+            .region-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
             
             .controls {
                 padding: 16px;
@@ -561,6 +573,17 @@
             
             .filter-tabs {
                 margin-bottom: 12px;
+            }
+
+            .stats-banner {
+                gap: 12px;
+                padding: 12px 16px;
+                font-size: 13px;
+            }
+
+            .stats-banner .zone-name {
+                font-size: 15px;
+                flex-basis: 100%;
             }
             
             .card { 
@@ -646,11 +669,14 @@
     <div class="container">
         <header>
             <h1>재개발 구역 매물</h1>
-            <div class="subtitle">2월 18일 조사 내역</div>
+            <div class="subtitle" id="dateSubtitle">데이터 로딩 중...</div>
             <button class="badge-info-btn" onclick="openModal()">아이콘 의미 📖</button>
         </header>
 
         <div class="controls">
+            <div class="region-tabs" id="regionTabs">
+                <button class="region-btn active" data-region="전체">전체</button>
+            </div>
             <div class="filter-tabs" id="filterTabs">
                 <button class="tab-btn active" data-district="전체">전체 매물</button>
                 <button class="tab-btn fav-tab" data-district="관심">★ 관심 매물</button>
@@ -700,19 +726,11 @@
         </div>
     </div>
 
-    <!-- 구역 통계 모달 -->
-    <div class="modal" id="zoneModal" onclick="closeModal(event, 'zoneModal')">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="modal-close" onclick="closeModal(null, 'zoneModal')">×</button>
-            <h2 id="zoneModalTitle">구역 통계</h2>
-            <div id="zoneModalContent"></div>
-        </div>
-    </div>
-
     <script>
         var SHEET_ID = '1kop_qWYOEQ4VWB7f-IWaGnrt0kwguCzjTnEBR4FtDKk';
         var TAB_NAME = 'LIST';
         var allData = [];
+        var currentRegion = '전체';
         var currentDistrict = '전체';
         var favorites = JSON.parse(localStorage.getItem('redev_favs') || '[]');
 
@@ -730,6 +748,62 @@
                 return rest > 0 ? `${uk}억 ${rest.toLocaleString()}` : `${uk}억`;
             }
             return valMan.toLocaleString() + "만원";
+        }
+
+        function formatDateFull(dateStr) {
+            if (!dateStr) return '';
+            
+            // 한글 형식 파싱: "2월 20일" → "2025년 2월 20일"
+            const koreanMatch = dateStr.match(/(\d+)월\s*(\d+)일/);
+            if (koreanMatch) {
+                const currentYear = new Date().getFullYear();
+                const month = parseInt(koreanMatch[1]);
+                const day = parseInt(koreanMatch[2]);
+                return `${currentYear}년 ${month}월 ${day}일`;
+            }
+            
+            // ISO 형식 시도
+            const date = new Date(dateStr);
+            if (!isNaN(date.getTime())) {
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                return `${year}년 ${month}월 ${day}일`;
+            }
+            
+            return '';
+        }
+
+        function formatDateShort(dateStr) {
+            if (!dateStr) return '';
+            
+            // 한글 형식 파싱: "2월 20일" → "2/20"
+            const koreanMatch = dateStr.match(/(\d+)월\s*(\d+)일/);
+            if (koreanMatch) {
+                const month = parseInt(koreanMatch[1]);
+                const day = parseInt(koreanMatch[2]);
+                return `${month}/${day}`;
+            }
+            
+            // ISO 형식 시도
+            const date = new Date(dateStr);
+            if (!isNaN(date.getTime())) {
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+                return `${month}/${day}`;
+            }
+            
+            return '';
+        }
+
+        function updateHeaderDate() {
+            const dates = allData.map(item => item['날짜']).filter(Boolean);
+            if (dates.length > 0) {
+                const latestDate = dates.sort().reverse()[0];
+                document.getElementById('dateSubtitle').textContent = `${formatDateFull(latestDate)} 업데이트`;
+            } else {
+                document.getElementById('dateSubtitle').textContent = 'Investment Analysis Dashboard';
+            }
         }
 
         function toggleFav(id) {
@@ -758,13 +832,47 @@
                 });
                 return obj;
             });
+            buildRegionTabs();
             buildFilters();
+            updateHeaderDate();
             applyFilters();
         };
 
+        function buildRegionTabs() {
+            var regions = [...new Set(allData.map(item => item['지역']).filter(Boolean))];
+            if (regions.length === 0) return;
+            
+            var container = document.getElementById('regionTabs');
+            regions.forEach(function(r) {
+                var btn = document.createElement('button');
+                btn.className = 'region-btn';
+                btn.dataset.region = r;
+                btn.textContent = r;
+                container.appendChild(btn);
+            });
+            
+            container.onclick = function(e) {
+                if (!e.target.matches('.region-btn')) return;
+                document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentRegion = e.target.dataset.region;
+                buildFilters();
+                applyFilters();
+            };
+        }
+
         function buildFilters() {
-            var districts = [...new Set(allData.map(item => item['구역명']).filter(Boolean))];
+            var filtered = currentRegion === '전체' ? allData : allData.filter(item => item['지역'] === currentRegion);
+            var districts = [...new Set(filtered.map(item => item['구역명']).filter(Boolean))];
             var container = document.getElementById('filterTabs');
+            
+            // 기존 구역 탭 제거 (전체, 관심 제외)
+            Array.from(container.children).forEach(btn => {
+                if (btn.dataset.district !== '전체' && btn.dataset.district !== '관심') {
+                    btn.remove();
+                }
+            });
+            
             districts.forEach(function(d) {
                 var btn = document.createElement('button');
                 btn.className = 'tab-btn';
@@ -772,6 +880,7 @@
                 btn.textContent = d;
                 container.insertBefore(btn, container.lastElementChild);
             });
+            
             container.onclick = function(e) {
                 if (!e.target.matches('.tab-btn')) return;
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -779,6 +888,10 @@
                 currentDistrict = e.target.dataset.district;
                 applyFilters();
             };
+            
+            // 첫 번째 탭 활성화
+            document.querySelector('.tab-btn').classList.add('active');
+            currentDistrict = '전체';
         }
 
         function renderListings(data) {
@@ -890,6 +1003,9 @@
                 const area = isDetached ? parseFloat(item['공급']) : parseFloat(item['전용']);
                 const tags = item['태그'] || '';
                 const onePlusOne = item['1+1 가능'] || '';
+                const description = item['물건설명'] || '';
+                const address = item['주소'] || '';
+                const itemDate = item['날짜'] ? `📅 ${formatDateShort(item['날짜'])}` : '';
                 let badges = '';
                 
                 // 1+1 가능 여부 체크
@@ -917,8 +1033,13 @@
                         <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${item._id}')" aria-label="관심 매물">★</button>
                         <div class="area-tag">${item['구역명']}</div>
                         <div class="subject">
-                            <div class="title">${item['물건명']} ${badges}</div>
-                            <div class="details">대지 ${item['공급']}㎡ · 전용 ${item['전용']}㎡ · ${tags}</div>
+                            <div class="title">
+                                ${item['물건명']} 
+                                ${badges}
+                                ${address ? `<span class="address-icon" data-address="${address}">📍</span>` : ''}
+                            </div>
+                            <div class="details">대지 ${item['공급']}㎡ · 전용 ${item['전용']}㎡ · ${tags}${itemDate ? ' · ' + itemDate : ''}</div>
+                            ${description ? `<div class="description">${description}</div>` : ''}
                         </div>
                         <div class="price-box">
                             <div class="price-main">${formatPrice(price)}</div>
@@ -936,106 +1057,13 @@
         function applyFilters() {
             const term = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allData.filter(i => {
+                const matchRegion = currentRegion === '전체' || i['지역'] === currentRegion;
                 const matchDist = (currentDistrict === '전체') || (currentDistrict === '관심' ? favorites.includes(i._id) : i['구역명'] === currentDistrict);
-                const matchSearch = !term || ['물건명', '구역명', '태그'].some(k => i[k] && i[k].toLowerCase().includes(term));
-                return matchDist && matchSearch;
+                const matchSearch = !term || ['물건명', '구역명', '태그', '물건설명'].some(k => i[k] && i[k].toLowerCase().includes(term));
+                return matchRegion && matchDist && matchSearch;
             });
             renderListings(filtered);
         }
-
-        // 구역 통계 표시
-        window.showZoneStats = function(zoneName) {
-            const zoneData = allData.filter(item => item['구역명'] === zoneName);
-            
-            if (zoneData.length === 0) return;
-
-            let totalPrice = 0;
-            let totalUnit = 0;
-            let minPrice = Infinity;
-            let maxPrice = 0;
-            let urgentCount = 0;
-            let valueCount = 0;
-            let onePlusOneCount = 0;
-            let detachedCount = 0;
-            let multiCount = 0;
-
-            zoneData.forEach(item => {
-                const price = toNumMan(item['거래가(숫자)']);
-                const type = item['부동산유형'] || '';
-                const isDetached = type.includes('단독') || type.includes('상가');
-                const area = isDetached ? parseFloat(item['공급']) : parseFloat(item['전용']);
-                const onePlusOne = item['1+1 가능'] || '';
-
-                if (price > 0 && area > 0) {
-                    const unit = price / area;
-                    totalPrice += price;
-                    totalUnit += unit;
-                    minPrice = Math.min(minPrice, price);
-                    maxPrice = Math.max(maxPrice, price);
-                }
-
-                if (isDetached) detachedCount++;
-                else multiCount++;
-
-                if (onePlusOne.includes('가능') || onePlusOne.includes('검토')) {
-                    onePlusOneCount++;
-                }
-            });
-
-            const avgPrice = totalPrice / zoneData.length;
-            const avgUnit = totalUnit / zoneData.length;
-            const avgPyung = Math.round(avgUnit * 3.3058);
-
-            // 급매/가성비 계산
-            zoneData.forEach(item => {
-                const price = toNumMan(item['거래가(숫자)']);
-                const type = item['부동산유형'] || '';
-                const isDetached = type.includes('단독') || type.includes('상가');
-                const area = isDetached ? parseFloat(item['공급']) : parseFloat(item['전용']);
-                
-                if (price > 0 && area > 0) {
-                    const unit = price / area;
-                    if (unit < avgUnit * 0.88) urgentCount++;
-                    else if (unit < avgUnit * 0.97) valueCount++;
-                }
-            });
-
-            document.getElementById('zoneModalTitle').textContent = `${zoneName} 구역 통계`;
-            document.getElementById('zoneModalContent').innerHTML = `
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">평균 매매가</div>
-                        <div class="stat-value">${formatPrice(Math.round(avgPrice))}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">평균 평당가</div>
-                        <div class="stat-value">${avgPyung.toLocaleString()}만</div>
-                    </div>
-                    <div class="stat-item stat-full">
-                        <div class="stat-label">가격 범위</div>
-                        <div class="stat-value small">${formatPrice(minPrice)} ~ ${formatPrice(maxPrice)}</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">총 매물</div>
-                        <div class="stat-value">${zoneData.length}개</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">🚨 급매 / ✅ 가성비</div>
-                        <div class="stat-value">${urgentCount}개 / ${valueCount}개</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">💜 1+1 가능</div>
-                        <div class="stat-value">${onePlusOneCount}개</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">유형별</div>
-                        <div class="stat-value small">단독 ${detachedCount}개 / 다세대 ${multiCount}개</div>
-                    </div>
-                </div>
-            `;
-
-            openModal('zoneModal');
-        };
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         document.getElementById('sortSelect').addEventListener('change', applyFilters);
@@ -1060,7 +1088,6 @@
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal(null, 'badgeModal');
-                closeModal(null, 'zoneModal');
             }
         });
     </script>
