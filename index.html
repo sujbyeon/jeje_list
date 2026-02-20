@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>재개발 구역 매물 List</title>
     
+    <!-- 파비콘 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+    
     <!-- SEO 및 공유 메타 태그 -->
     <meta name="description" content="서울·경기 재개발 구역 매물 분석 대시보드">
     <meta name="keywords" content="재개발, 재건축, 부동산, 매물, 투자">
@@ -896,7 +899,7 @@
                 const latestDate = dates.sort().reverse()[0];
                 document.getElementById('dateSubtitle').textContent = `${formatDateFull(latestDate)} 업데이트`;
             } else {
-                document.getElementById('dateSubtitle').textContent = '재개발 구역 매물';
+                document.getElementById('dateSubtitle').textContent = 'Investment Analysis Dashboard';
             }
         }
 
