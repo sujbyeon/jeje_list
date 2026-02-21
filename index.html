@@ -14,16 +14,20 @@
     
     <!-- Open Graph (카카오톡, 페이스북 등) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="재개발 구역 매물 분석">
-    <meta property="og:description" content="서울·경기 재개발 구역 매물 리스트">
-    <meta property="og:site_name" content="재개발 매물 분석">
+    <meta property="og:title" content="재개발 구역 매물 리스트">
+    <meta property="og:description" content="서울·경기 재개발 구역 매물 정보">
+    <meta property="og:site_name" content="재개발 매물">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="재개발 구역 매물 분석">
-    <meta name="twitter:description" content="서울·경기 재개발 구역 매물 리스트">
+    <meta name="twitter:title" content="재개발 구역 매물 리스트">
+    <meta name="twitter:description" content="서울·경기 재개발 구역 매물 정보">
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    
+    <!-- 네이버 지도 API -->
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=t64jy79yhd"></script>
+    
     <style>
         :root { 
             --brand-navy: #022136; 
@@ -262,6 +266,33 @@
             position: relative;
         }
 
+        /* 지도 모달 전용 스타일 */
+        .modal-content.map-modal {
+            max-width: 1000px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .map-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .map-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        #map {
+            width: 100%;
+            height: 70vh;
+            min-height: 500px;
+        }
+
         .modal-close {
             position: absolute;
             top: 20px;
@@ -275,6 +306,7 @@
             padding: 0;
             width: 32px;
             height: 32px;
+            z-index: 10;
         }
 
         .modal-close:hover {
@@ -422,6 +454,27 @@
         .sort-select:focus {
             outline: none;
             border-color: var(--brand-navy);
+        }
+
+        /* 전체 지도보기 버튼 */
+        .map-view-btn {
+            padding: 11px 20px;
+            border: 2px solid var(--brand-gold);
+            background: var(--card-bg);
+            color: var(--brand-gold);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .map-view-btn:hover {
+            background: var(--brand-gold);
+            color: white;
         }
 
         /* 통계 배너 */
@@ -604,6 +657,18 @@
             color: var(--brand-navy);
         }
 
+        .btn-map {
+            background: #f0f9ff;
+            color: #0369a1;
+            border-color: #bae6fd;
+        }
+
+        .btn-map:hover {
+            background: #0369a1;
+            color: white;
+            border-color: #0369a1;
+        }
+
         /* 배지 */
         .badge { 
             font-size: 12px; 
@@ -698,11 +763,18 @@
             .action-box { 
                 flex-direction: row;
                 width: 100%;
-                gap: 8px;
+                gap: 6px;
             }
             
             .btn { 
                 flex: 1;
+                font-size: 11px;
+                padding: 8px 10px;
+            }
+
+            #map {
+                height: 60vh;
+                min-height: 400px;
             }
         }
 
@@ -785,6 +857,7 @@
                     <option value="pyungLow">낮은 평당가</option>
                     <option value="landHigh">대지지분순</option>
                 </select>
+                <button class="map-view-btn" onclick="openMapModal()">🗺️ 전체 지도보기</button>
             </div>
         </div>
 
@@ -823,6 +896,17 @@
         </div>
     </div>
 
+    <!-- 전체 지도 모달 -->
+    <div class="modal" id="mapModal" onclick="closeModal(event, 'mapModal')">
+        <div class="modal-content map-modal" onclick="event.stopPropagation()">
+            <div class="map-header">
+                <h2 id="mapModalTitle">전체 매물 지도</h2>
+                <button class="modal-close" onclick="closeModal(null, 'mapModal')" style="position: static;">×</button>
+            </div>
+            <div id="map"></div>
+        </div>
+    </div>
+
     <script>
         var SHEET_ID = '1kop_qWYOEQ4VWB7f-IWaGnrt0kwguCzjTnEBR4FtDKk';
         var TAB_NAME = 'LIST';
@@ -830,6 +914,8 @@
         var currentRegion = '전체';
         var currentDistrict = '전체';
         var favorites = JSON.parse(localStorage.getItem('redev_favs') || '[]');
+        var naverMap = null;
+        var markers = [];
 
         function toNumMan(val) {
             if (!val) return 0;
@@ -850,7 +936,6 @@
         function formatDateFull(dateStr) {
             if (!dateStr) return '';
             
-            // 한글 형식 파싱: "2월 20일" → "2025년 2월 20일"
             const koreanMatch = dateStr.match(/(\d+)월\s*(\d+)일/);
             if (koreanMatch) {
                 const currentYear = new Date().getFullYear();
@@ -859,7 +944,6 @@
                 return `${currentYear}년 ${month}월 ${day}일`;
             }
             
-            // ISO 형식 시도
             const date = new Date(dateStr);
             if (!isNaN(date.getTime())) {
                 const year = date.getFullYear();
@@ -874,7 +958,6 @@
         function formatDateShort(dateStr) {
             if (!dateStr) return '';
             
-            // 한글 형식 파싱: "2월 20일" → "2/20"
             const koreanMatch = dateStr.match(/(\d+)월\s*(\d+)일/);
             if (koreanMatch) {
                 const month = parseInt(koreanMatch[1]);
@@ -882,7 +965,6 @@
                 return `${month}/${day}`;
             }
             
-            // ISO 형식 시도
             const date = new Date(dateStr);
             if (!isNaN(date.getTime())) {
                 const month = date.getMonth() + 1;
@@ -899,7 +981,7 @@
                 const latestDate = dates.sort().reverse()[0];
                 document.getElementById('dateSubtitle').textContent = `${formatDateFull(latestDate)} 업데이트`;
             } else {
-                document.getElementById('dateSubtitle').textContent = 'Investment Analysis Dashboard';
+                document.getElementById('dateSubtitle').textContent = '매물 정보';
             }
         }
 
@@ -909,6 +991,23 @@
             else favorites.push(id);
             localStorage.setItem('redev_favs', JSON.stringify(favorites));
             applyFilters();
+        }
+
+        // 네이버 지도 앱 열기
+        function openNaverMapApp(address) {
+            const query = encodeURIComponent(address);
+            const appUrl = `nmap://search?query=${query}&appname=com.example.myapp`;
+            const webUrl = `https://map.naver.com/v5/search/${query}`;
+            
+            // 모바일인 경우 앱 실행 시도
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                window.location.href = appUrl;
+                setTimeout(() => {
+                    window.location.href = webUrl;
+                }, 1500);
+            } else {
+                window.open(webUrl, '_blank');
+            }
         }
 
         function fetchData() {
@@ -963,7 +1062,6 @@
             var districts = [...new Set(filtered.map(item => item['구역명']).filter(Boolean))];
             var container = document.getElementById('filterTabs');
             
-            // 기존 구역 탭 제거 (전체, 관심 제외)
             Array.from(container.children).forEach(btn => {
                 if (btn.dataset.district !== '전체' && btn.dataset.district !== '관심') {
                     btn.remove();
@@ -986,7 +1084,6 @@
                 applyFilters();
             };
             
-            // 첫 번째 탭 활성화
             document.querySelector('.tab-btn').classList.add('active');
             currentDistrict = '전체';
         }
@@ -1005,7 +1102,6 @@
                 return;
             }
 
-            // 통계 계산
             let totalPrice = 0;
             let totalUnit = 0;
             let urgentCount = 0;
@@ -1033,7 +1129,6 @@
             const avgUnit = totalUnit / data.length;
             const avgPyung = Math.round(avgUnit * 3.3058);
 
-            // 급매/가성비 계산
             data.forEach(item => {
                 const price = toNumMan(item['거래가(숫자)']);
                 const type = item['부동산유형'] || '';
@@ -1047,7 +1142,6 @@
                 }
             });
 
-            // 통계 배너 업데이트
             const banner = document.getElementById('statsBanner');
             const zoneName = currentDistrict === '전체' ? '전체 매물' : currentDistrict === '관심' ? '관심 매물' : currentDistrict;
             banner.innerHTML = `
@@ -1105,7 +1199,6 @@
                 const itemDate = item['날짜'] ? `📅 ${formatDateShort(item['날짜'])}` : '';
                 let badges = '';
                 
-                // 1+1 가능 여부 체크
                 if (onePlusOne.includes('가능')) {
                     badges += '<span class="badge b-plus">1+1 가능</span>';
                 } else if (onePlusOne.includes('검토')) {
@@ -1125,6 +1218,9 @@
                     else if (avgUnit > 0 && curUnit < avgUnit * 0.97) badges += '<span class="badge b-value">가성비</span>';
                 }
 
+                const priceText = formatPrice(price);
+                const mapAppLink = `onclick="openNaverMapApp('${address}')"`;
+
                 return `
                     <div class="card">
                         <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFav('${item._id}')" aria-label="관심 매물">★</button>
@@ -1139,12 +1235,12 @@
                             ${description ? `<div class="description">${description}</div>` : ''}
                         </div>
                         <div class="price-box">
-                            <div class="price-main">${formatPrice(price)}</div>
+                            <div class="price-main">${priceText}</div>
                             <div class="price-pyung">평당 ${pyungPrice.toLocaleString()}만 (${areaType})</div>
                         </div>
                         <div class="action-box">
-                            <a href="${item['상세보기']}" target="_blank" class="btn btn-main">상세 정보</a>
-                            <a href="${item['위치보기']}" target="_blank" class="btn btn-sub">위치보기</a>
+                            <a href="${item['상세보기']}" target="_blank" class="btn btn-main">상세보기</a>
+                            ${address ? `<button class="btn btn-map" ${mapAppLink}>지도</button>` : ''}
                         </div>
                     </div>
                 `;
@@ -1160,6 +1256,146 @@
                 return matchRegion && matchDist && matchSearch;
             });
             renderListings(filtered);
+        }
+
+        // 전체 지도 모달 열기
+        function openMapModal() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allData.filter(i => {
+                const matchRegion = currentRegion === '전체' || i['지역'] === currentRegion;
+                const matchDist = (currentDistrict === '전체') || (currentDistrict === '관심' ? favorites.includes(i._id) : i['구역명'] === currentDistrict);
+                const matchSearch = !term || ['물건명', '구역명', '태그', '물건설명'].some(k => i[k] && i[k].toLowerCase().includes(term));
+                return matchRegion && matchDist && matchSearch;
+            });
+
+            const zoneName = currentDistrict === '전체' ? '전체 매물' : currentDistrict === '관심' ? '관심 매물' : currentDistrict;
+            document.getElementById('mapModalTitle').textContent = `${zoneName} 지도 (${filtered.length}개)`;
+            
+            openModal('mapModal');
+            
+            setTimeout(() => {
+                initMap(filtered);
+            }, 100);
+        }
+
+        // 네이버 지도 초기화
+        function initMap(data) {
+            if (!data || data.length === 0) return;
+
+            // 기존 마커 제거
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+
+            // 지도 중심 계산 (첫 번째 주소 기준)
+            const firstAddress = data.find(item => item['주소'])?.['주소'];
+            
+            if (!firstAddress) {
+                alert('주소 정보가 없는 매물입니다.');
+                return;
+            }
+
+            // 지도 초기화 (서울 중심으로)
+            if (!naverMap) {
+                const mapOptions = {
+                    center: new naver.maps.LatLng(37.5665, 126.9780),
+                    zoom: 12
+                };
+                naverMap = new naver.maps.Map('map', mapOptions);
+            }
+
+            // 지오코딩으로 주소를 좌표로 변환하여 마커 표시
+            let boundsArray = [];
+            let processedCount = 0;
+
+            data.forEach((item, index) => {
+                let address = item['주소'];
+                if (!address) return;
+
+                // 쉼표 뒤 건물명/기타 정보 제거
+                address = address.split(',')[0].trim();
+
+                naver.maps.Service.geocode({
+                    query: address
+                }, function(status, response) {
+                    processedCount++;
+
+                    if (status !== naver.maps.Service.Status.OK) {
+                        if (processedCount === data.length) {
+                            adjustMapBounds(boundsArray);
+                        }
+                        return;
+                    }
+
+                    const result = response.v2.addresses[0];
+                    if (!result) return;
+
+                    const lat = parseFloat(result.y);
+                    const lng = parseFloat(result.x);
+                    const position = new naver.maps.LatLng(lat, lng);
+                    
+                    boundsArray.push(position);
+
+                    const price = toNumMan(item['거래가(숫자)']);
+                    const priceText = formatPrice(price);
+
+                    const marker = new naver.maps.Marker({
+                        position: position,
+                        map: naverMap,
+                        title: item['물건명']
+                    });
+
+                    const infoContent = `
+                        <div style="padding:15px;min-width:200px;line-height:1.5;">
+                            <div style="font-weight:800;font-size:14px;color:#022136;margin-bottom:8px;">
+                                ${item['구역명']} - ${item['물건명']}
+                            </div>
+                            <div style="font-size:18px;font-weight:900;color:#022136;margin-bottom:6px;">
+                                ${priceText}
+                            </div>
+                            <div style="font-size:12px;color:#86868B;margin-bottom:10px;">
+                                대지 ${item['공급']}㎡ · 전용 ${item['전용']}㎡
+                            </div>
+                            <a href="${item['상세보기']}" target="_blank" 
+                               style="display:inline-block;padding:6px 12px;background:#022136;color:white;
+                                      text-decoration:none;font-size:12px;font-weight:700;border-radius:4px;">
+                                상세보기
+                            </a>
+                        </div>
+                    `;
+
+                    const infoWindow = new naver.maps.InfoWindow({
+                        content: infoContent
+                    });
+
+                    naver.maps.Event.addListener(marker, 'click', function() {
+                        if (infoWindow.getMap()) {
+                            infoWindow.close();
+                        } else {
+                            infoWindow.open(naverMap, marker);
+                        }
+                    });
+
+                    markers.push(marker);
+
+                    // 모든 주소 처리 완료시 지도 범위 조정
+                    if (processedCount === data.length) {
+                        adjustMapBounds(boundsArray);
+                    }
+                });
+            });
+        }
+
+        function adjustMapBounds(boundsArray) {
+            if (boundsArray.length === 0) return;
+
+            if (boundsArray.length === 1) {
+                naverMap.setCenter(boundsArray[0]);
+                naverMap.setZoom(15);
+            } else {
+                const bounds = new naver.maps.LatLngBounds();
+                boundsArray.forEach(pos => bounds.extend(pos));
+                naverMap.fitBounds(bounds);
+            }
         }
 
         document.getElementById('searchInput').addEventListener('input', applyFilters);
@@ -1181,10 +1417,10 @@
             }
         }
 
-        // ESC 키로 모달 닫기
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 closeModal(null, 'badgeModal');
+                closeModal(null, 'mapModal');
             }
         });
     </script>
