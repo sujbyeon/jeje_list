@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
     <!-- 네이버 지도 API -->
-    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=t64jy79yhd"></script>
+    <script type="text/javascript" src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=4j2btgy9jy"></script>
     
     <style>
         :root { 
@@ -1108,6 +1108,22 @@
             let valueCount = 0;
             let onePlusOneCount = 0;
 
+            // 구역별 통계 계산
+            const zoneStats = {};
+            allData.forEach(item => {
+                const zone = item['구역명'];
+                const type = item['부동산유형'] || '';
+                const isDetached = type.includes('단독') || type.includes('상가');
+                const price = toNumMan(item['거래가(숫자)']);
+                const area = isDetached ? parseFloat(item['공급']) : parseFloat(item['전용']);
+                if (price > 0 && area > 0) {
+                    if (!zoneStats[zone]) zoneStats[zone] = { totalUnit: 0, count: 0 };
+                    zoneStats[zone].totalUnit += (price / area);
+                    zoneStats[zone].count++;
+                }
+            });
+
+            // 현재 필터된 데이터 통계 계산
             data.forEach(item => {
                 const price = toNumMan(item['거래가(숫자)']);
                 const type = item['부동산유형'] || '';
@@ -1129,6 +1145,7 @@
             const avgUnit = totalUnit / data.length;
             const avgPyung = Math.round(avgUnit * 3.3058);
 
+            // 급매/가성비 카운트 (평균 계산 후)
             data.forEach(item => {
                 const price = toNumMan(item['거래가(숫자)']);
                 const type = item['부동산유형'] || '';
@@ -1157,20 +1174,6 @@
                 <span class="stat-item-inline">💜 <strong>${onePlusOneCount}</strong></span>
             `;
             banner.style.display = 'flex';
-            
-            const zoneStats = {};
-            allData.forEach(item => {
-                const zone = item['구역명'];
-                const type = item['부동산유형'] || '';
-                const isDetached = type.includes('단독') || type.includes('상가');
-                const price = toNumMan(item['거래가(숫자)']);
-                const area = isDetached ? parseFloat(item['공급']) : parseFloat(item['전용']);
-                if (price > 0 && area > 0) {
-                    if (!zoneStats[zone]) zoneStats[zone] = { totalUnit: 0, count: 0 };
-                    zoneStats[zone].totalUnit += (price / area);
-                    zoneStats[zone].count++;
-                }
-            });
 
             const sortVal = document.getElementById('sortSelect').value;
             data.sort((a, b) => {
@@ -1280,19 +1283,21 @@
 
         // 네이버 지도 초기화
         function initMap(data) {
-            if (!data || data.length === 0) return;
+            if (!data || data.length === 0) {
+                alert('표시할 매물이 없습니다.');
+                return;
+            }
+
+            // 주소가 있는 매물만 필터링
+            const dataWithAddress = data.filter(item => item['주소']);
+            if (dataWithAddress.length === 0) {
+                alert('주소 정보가 없는 매물입니다.');
+                return;
+            }
 
             // 기존 마커 제거
             markers.forEach(marker => marker.setMap(null));
             markers = [];
-
-            // 지도 중심 계산 (첫 번째 주소 기준)
-            const firstAddress = data.find(item => item['주소'])?.['주소'];
-            
-            if (!firstAddress) {
-                alert('주소 정보가 없는 매물입니다.');
-                return;
-            }
 
             // 지도 초기화 (서울 중심으로)
             if (!naverMap) {
@@ -1307,7 +1312,7 @@
             let boundsArray = [];
             let processedCount = 0;
 
-            data.forEach((item, index) => {
+            dataWithAddress.forEach((item) => {
                 let address = item['주소'];
                 if (!address) return;
 
@@ -1320,7 +1325,7 @@
                     processedCount++;
 
                     if (status !== naver.maps.Service.Status.OK) {
-                        if (processedCount === data.length) {
+                        if (processedCount === dataWithAddress.length) {
                             adjustMapBounds(boundsArray);
                         }
                         return;
@@ -1378,7 +1383,7 @@
                     markers.push(marker);
 
                     // 모든 주소 처리 완료시 지도 범위 조정
-                    if (processedCount === data.length) {
+                    if (processedCount === dataWithAddress.length) {
                         adjustMapBounds(boundsArray);
                     }
                 });
