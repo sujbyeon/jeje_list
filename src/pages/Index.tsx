@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useListings, useFavorites } from '@/hooks/useListings';
-import { ListingItem, SortOption, BadgeFilterType } from '@/types/listing';
+import { SortOption, BadgeFilterType } from '@/types/listing';
 import { toNumMan, formatPrice, getArea, getUnitPrice, computeZoneStats, getLatestDate } from '@/lib/listing-utils';
 import { FilterPanel } from '@/components/FilterPanel';
 import { SearchBar } from '@/components/SearchBar';
