@@ -214,7 +214,7 @@ const Index = () => {
                 isFav={favorites.includes(item._id)}
                 onToggleFav={() => toggleFav(item._id)}
                 zoneStats={zoneStats}
-                isCompareMode={compareMode}
+                isCompareMode={true}
                 isSelected={compareIds.includes(item._id)}
                 onCompareToggle={() => toggleCompareId(item._id)}
               />
