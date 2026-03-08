@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { SortOption } from '@/types/listing';
 
 interface SearchBarProps {
@@ -7,13 +8,12 @@ interface SearchBarProps {
   onSortChange: (v: SortOption) => void;
   favMode: boolean;
   onToggleFavMode: () => void;
-  onOpenMap: () => void;
 }
 
 export function SearchBar({
   searchTerm, onSearchChange, sortOption, onSortChange,
-  favMode, onToggleFavMode, onOpenMap,
-}: SearchBarProps) {
+  favMode, onToggleFavMode,
+}: Omit<SearchBarProps, 'onOpenMap'> & { onOpenMap?: () => void }) {
   return (
     <div className="flex items-stretch bg-card border border-border border-t-0 mb-5">
       <input
