@@ -61,9 +61,9 @@ export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode
       </div>
 
       {/* Price */}
-      <div className="text-left md:text-right p-3 md:px-4 md:py-3 bg-secondary/50 border border-border min-w-[140px] shrink-0">
-        <div className="text-xl md:text-2xl font-black text-navy leading-tight">{formatPrice(price)}</div>
-        <div className="text-[11px] text-muted-foreground mt-1 font-semibold">평당 {pyungPrice.toLocaleString()}만 ({areaType})</div>
+      <div className="text-left md:text-right p-2.5 md:px-4 md:py-2.5 bg-secondary/50 border border-border min-w-[130px] shrink-0">
+        <div className="text-lg md:text-xl font-extrabold text-navy leading-tight">{formatPrice(price)}</div>
+        <div className="text-[10px] text-muted-foreground mt-0.5 font-medium">평당 {pyungPrice.toLocaleString()}만 ({areaType})</div>
       </div>
 
       {/* Actions */}
