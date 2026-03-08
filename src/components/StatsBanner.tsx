@@ -36,13 +36,13 @@ export function StatsBanner({
       <span className="text-muted-foreground font-semibold">평당 <strong className="text-foreground font-bold">{avgPyung.toLocaleString()}만</strong></span>
       <span className="text-border">|</span>
       <span className="text-muted-foreground font-semibold flex items-center gap-1">
-        <BadgeFilterBtn label="급매" active={badgeFilter === 'urgent'} onClick={() => onBadgeFilter(badgeFilter === 'urgent' ? null : 'urgent')}>
+        <BadgeFilterBtn active={badgeFilter === 'urgent'} onClick={() => onBadgeFilter(badgeFilter === 'urgent' ? null : 'urgent')}>
           🚨<strong>{urgentCount}</strong>
         </BadgeFilterBtn>
-        <BadgeFilterBtn label="저가" active={badgeFilter === 'cheap'} onClick={() => onBadgeFilter(badgeFilter === 'cheap' ? null : 'cheap')}>
+        <BadgeFilterBtn active={badgeFilter === 'cheap'} onClick={() => onBadgeFilter(badgeFilter === 'cheap' ? null : 'cheap')}>
           💚<strong>{cheapCount}</strong>
         </BadgeFilterBtn>
-        <BadgeFilterBtn label="1+1" active={badgeFilter === 'plus'} onClick={() => onBadgeFilter(badgeFilter === 'plus' ? null : 'plus')}>
+        <BadgeFilterBtn active={badgeFilter === 'plus'} onClick={() => onBadgeFilter(badgeFilter === 'plus' ? null : 'plus')}>
           💜<strong>{plusCount}</strong>
         </BadgeFilterBtn>
       </span>
