@@ -179,18 +179,6 @@ const Index = () => {
           
         />
 
-        {/* Compare floating bar */}
-        {compareMode && compareIds.length > 0 && (
-          <div className="sticky top-0 z-50 bg-card border border-gold p-3 mb-4 flex items-center justify-between animate-fade-in">
-            <span className="text-sm font-bold text-navy">{compareIds.length}개 매물 선택됨 (최대 10개)</span>
-            <button
-              onClick={() => setShowCompare(true)}
-              className="bg-primary text-primary-foreground px-4 py-2 text-sm font-bold cursor-pointer border-none hover:bg-gold transition-all"
-            >
-              비교하기
-            </button>
-          </div>
-        )}
 
         {filtered.length > 0 && (
           <StatsBanner
