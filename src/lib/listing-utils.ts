@@ -119,13 +119,37 @@ export function openNaverMap(address: string, locUrl?: string) {
   }
 }
 
-export function shareKakao(item: ListingItem) {
+export function shareKakao(item: ListingItem): Promise<boolean> {
   const text = `[재개발 매물] ${item['구역명']} - ${item['물건명']}\n매매가: ${formatPrice(toNumMan(item['거래가(숫자)']))}\n대지 ${item['공급']}㎡ · 전용 ${item['전용']}㎡`;
+  const fullText = text + '\n' + (item['상세보기'] || '');
+
   if (navigator.share) {
-    navigator.share({ title: '재개발 매물 정보', text, url: item['상세보기'] }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(text + '\n' + item['상세보기']).then(() => {
-      alert('매물 정보가 클립보드에 복사되었습니다!');
-    });
+    return navigator.share({ title: '재개발 매물 정보', text, url: item['상세보기'] })
+      .then(() => true)
+      .catch(() => copyToClipboard(fullText));
+  }
+  return copyToClipboard(fullText);
+}
+
+function copyToClipboard(text: string): Promise<boolean> {
+  if (navigator.clipboard?.writeText) {
+    return navigator.clipboard.writeText(text).then(() => true).catch(() => fallbackCopy(text));
+  }
+  return Promise.resolve(fallbackCopy(text));
+}
+
+function fallbackCopy(text: string): boolean {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
   }
 }
