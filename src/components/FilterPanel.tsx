@@ -89,6 +89,15 @@ export function FilterPanel({
           </span>
         ))}
         {hint && <span className="ml-auto text-xs text-muted-foreground font-medium hidden md:inline">{hint}</span>}
+        {hasActiveFilter && (
+          <button
+            onClick={handleReset}
+            className="ml-auto flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors cursor-pointer bg-transparent border-none whitespace-nowrap"
+          >
+            <RotateCcw size={12} />
+            초기화
+          </button>
+        )}
       </div>
 
       {/* Tier 1: Region - always visible */}
