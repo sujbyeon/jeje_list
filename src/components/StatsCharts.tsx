@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ListingItem } from '@/types/listing';
 import { toNumMan, getArea, getPyungPrice, isDetachedOrCommercial } from '@/lib/listing-utils';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList,
   PieChart, Pie, Cell, Legend,
   ScatterChart, Scatter, ZAxis,
 } from 'recharts';
@@ -144,6 +144,7 @@ export function StatsCharts({ data }: StatsChartsProps) {
                   {zoneData.map((_, i) => (
                     <Cell key={i} fill={i === 0 ? 'hsl(var(--primary))' : i < 3 ? COLORS[1] : 'hsl(var(--muted-foreground) / 0.4)'} />
                   ))}
+                  <LabelList dataKey="avgPrice" position="top" formatter={formatMan} style={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
