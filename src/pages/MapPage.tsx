@@ -11,6 +11,7 @@ const MapPage = () => {
   const markersRef = useRef<any[]>([]);
   const [selectedItem, setSelectedItem] = useState<ListingItem | null>(null);
   const [filterType, setFilterType] = useState('전체');
+  const [mapError, setMapError] = useState<string | null>(null);
 
   const types = useMemo(() => {
     const set = new Set(data.map(i => i['사업유형']).filter(Boolean));
@@ -38,6 +39,13 @@ const MapPage = () => {
     markersRef.current.forEach(m => m.setMap(null));
     markersRef.current = [];
 
+    // Check if geocoder service is available
+    if (!naver.maps.Service) {
+      setMapError('지오코딩 서비스를 사용할 수 없습니다. 네이버 클라우드에서 도메인 등록이 전파되기까지 시간이 걸릴 수 있습니다.');
+      return;
+    }
+
+    setMapError(null);
     const bounds = new naver.maps.LatLngBounds();
     let geocoded = 0;
 
@@ -143,7 +151,14 @@ const MapPage = () => {
             매물 데이터를 불러오는 중...
           </div>
         ) : (
-          <div id="fullMap" className="w-full h-full" />
+          <>
+            <div id="fullMap" className="w-full h-full" />
+            {mapError && (
+              <div className="absolute top-4 left-4 right-4 bg-destructive/10 border border-destructive/30 text-destructive text-xs font-semibold p-3 z-20">
+                ⚠️ {mapError}
+              </div>
+            )}
+          </>
         )}
 
         {/* Selected item panel */}
