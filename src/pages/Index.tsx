@@ -273,7 +273,6 @@ function initMap(data: ListingItem[]) {
       const position = new naver.maps.LatLng(parseFloat(r.y), parseFloat(r.x));
       boundsArray.push(position);
       const price = toNumMan(item['거래가(숫자)']);
-      const { formatPrice } = require('@/lib/listing-utils');
       const marker = new naver.maps.Marker({ position, map, title: item['물건명'] });
       const infoWindow = new naver.maps.InfoWindow({
         content: `<div style="padding:15px;min-width:200px;line-height:1.5;font-family:'Pretendard Variable',sans-serif;">
