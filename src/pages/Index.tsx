@@ -9,6 +9,7 @@ import { ListingCard } from '@/components/ListingCard';
 import { AdBanner } from '@/components/AdBanner';
 import { BadgeInfoModal } from '@/components/BadgeInfoModal';
 import { CompareModal } from '@/components/CompareModal';
+import { StatsCharts } from '@/components/StatsCharts';
 
 const Index = () => {
   const { data, loading } = useListings();
@@ -22,6 +23,7 @@ const Index = () => {
   const [favMode, setFavMode] = useState(false);
   const [badgeFilter, setBadgeFilter] = useState<BadgeFilterType>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -135,6 +137,12 @@ const Index = () => {
           </p>
           <div className="flex gap-2 mt-3 md:absolute md:top-0 md:right-0 md:mt-0">
             <button
+              onClick={() => setShowStats(!showStats)}
+              className={`border text-[13px] font-semibold px-3.5 py-2 cursor-pointer transition-all font-sans ${showStats ? 'bg-gold/10 border-gold text-gold' : 'bg-card border-border text-muted-foreground hover:border-navy hover:text-navy'}`}
+            >
+              📈 통계
+            </button>
+            <button
               onClick={() => setShowBadgeModal(true)}
               className="bg-card border border-border text-muted-foreground text-[13px] font-semibold px-3.5 py-2 cursor-pointer transition-all hover:border-navy hover:text-navy font-sans"
             >
@@ -196,6 +204,9 @@ const Index = () => {
             badgeFilter={badgeFilter}
             onBadgeFilter={setBadgeFilter}
           />
+        )}
+        {showStats && !loading && filtered.length > 0 && (
+          <StatsCharts data={filtered} />
         )}
 
         {/* Listings */}
