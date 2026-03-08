@@ -30,34 +30,34 @@ export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode
   const locUrl = item['위치보기'] || '';
 
   return (
-    <div className={`bg-card border border-border p-4 md:p-5 md:px-6 flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-4 transition-all relative hover:border-gold hover:shadow-md animate-fade-in ${isSelected ? 'ring-2 ring-gold' : ''}`}>
+    <div className={`bg-card border border-border p-3.5 md:p-4 md:px-5 flex flex-col md:flex-row items-stretch md:items-center gap-2.5 md:gap-4 transition-all relative hover:border-gold hover:shadow-md animate-fade-in ${isSelected ? 'ring-2 ring-gold' : ''}`}>
       {/* Fav button */}
       <button
         onClick={onToggleFav}
-        className={`absolute top-4 right-4 md:static text-2xl cursor-pointer border-none bg-transparent transition-all shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center p-0 active:scale-90 ${isFav ? 'text-gold' : 'text-border'}`}
+        className={`absolute top-3.5 right-3.5 md:static text-xl cursor-pointer border-none bg-transparent transition-all shrink-0 min-w-[36px] min-h-[36px] flex items-center justify-center p-0 active:scale-90 ${isFav ? 'text-gold' : 'text-border'}`}
         aria-label="관심"
       >
         ★
       </button>
 
       {/* Zone tag */}
-      <div className="text-base font-extrabold text-gold min-w-[100px] shrink-0 self-start md:self-auto mt-1.5 md:mt-0">
+      <div className="text-sm font-bold text-gold min-w-[90px] shrink-0 self-start md:self-auto mt-1 md:mt-0">
         {item['구역명']}
       </div>
 
       {/* Subject */}
       <div className="flex-1 min-w-0">
-        <div className="text-base md:text-lg font-bold text-navy mb-1.5 flex items-center gap-2 flex-wrap pr-10 md:pr-0">
+        <div className="text-sm md:text-[15px] font-bold text-navy mb-1 flex items-center gap-1.5 flex-wrap pr-10 md:pr-0">
           {item['물건명']}
           <TypeBadge type={item['사업유형']} />
-          {plusType && <span className="text-xs font-extrabold text-purple-600">💜 1+1 {plusType}</span>}
-          {isUrgent && <span className="text-xs font-extrabold text-red-600">🚨 급매</span>}
-          {isCheap && <span className="text-xs font-extrabold text-green-600">💚 저렴</span>}
+          {plusType && <span className="text-[11px] font-bold text-purple-600">💜 1+1 {plusType}</span>}
+          {isUrgent && <span className="text-[11px] font-bold text-red-600">🚨 급매</span>}
+          {isCheap && <span className="text-[11px] font-bold text-green-600">💚 저렴</span>}
         </div>
-        <div className="text-[13px] text-muted-foreground font-normal leading-relaxed">
+        <div className="text-xs text-muted-foreground font-normal leading-relaxed">
           대지 {item['공급']}㎡ · 전용 {item['전용']}㎡{floorStr ? ` · ${floorStr}` : ''} · {tags}{dateStr ? ` · ${dateStr}` : ''}
         </div>
-        {desc && <div className="text-xs text-muted-foreground mt-1 leading-relaxed">{desc}</div>}
+        {desc && <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{desc}</div>}
       </div>
 
       {/* Price */}
