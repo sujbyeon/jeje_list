@@ -17,10 +17,13 @@ export function AdBanner({}: AdBannerProps) {
           href={item.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="no-underline text-inherit flex items-center md:flex-col transition-all px-2 md:px-4 py-1 md:py-2 rounded-lg hover:bg-gold/10 shrink-0"
+          className="no-underline text-inherit flex items-center md:flex-col transition-all px-1.5 md:px-4 py-1 md:py-2 rounded-lg hover:bg-gold/10"
         >
           <div className="text-[11px] text-muted-foreground mb-1 font-medium hidden md:block">{item.label}</div>
-          <div className="text-[11px] md:text-[14px] font-bold text-navy whitespace-nowrap">{item.content}</div>
+          <div className="text-[10px] md:text-[14px] font-bold text-navy whitespace-nowrap">
+            <span className="md:hidden">{item.mobileContent}</span>
+            <span className="hidden md:inline">{item.content}</span>
+          </div>
         </a>
       ))}
     </div>
