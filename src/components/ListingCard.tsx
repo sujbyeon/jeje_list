@@ -41,7 +41,7 @@ export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode
       </button>
 
       {/* Zone tag */}
-      <div className="text-sm font-bold text-gold min-w-[90px] shrink-0 self-start md:self-auto mt-1 md:mt-0">
+      <div className="text-base md:text-lg font-extrabold text-gold min-w-[90px] shrink-0 self-start md:self-auto mt-1 md:mt-0">
         {item['구역명']}
       </div>
 
