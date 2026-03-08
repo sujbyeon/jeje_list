@@ -53,7 +53,7 @@ export function FilterPanel({
   return (
     <div className="bg-card border border-border shadow-sm mb-4 overflow-hidden">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 px-5 py-2.5 bg-secondary/50 border-b border-border text-xs font-semibold text-muted-foreground min-h-[36px]">
+      <div className="flex items-center gap-1.5 px-4 py-2 bg-secondary/50 border-b border-border text-[11px] font-medium text-muted-foreground min-h-[32px]">
         <span className="text-navy font-bold">전체</span>
         {breadcrumbParts.map((p, i) => (
           <span key={i} className="contents">
