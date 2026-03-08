@@ -122,37 +122,37 @@ const Index = () => {
 
 
   return (
-    <div className="min-h-screen bg-background py-5 md:py-10 px-3.5 md:px-5">
+    <div className="min-h-screen bg-background py-6 md:py-10 px-4 md:px-6">
       <div className="max-w-[1200px] mx-auto">
         {/* Header */}
-        <header className="mb-4 md:mb-6 border-l-[3px] border-l-gold pl-5">
-          <h1 className="text-3xl md:text-[42px] font-extrabold text-navy mb-2">재개발 구역 매물</h1>
-          <p className="text-sm md:text-lg text-gold font-semibold">
+        <header className="mb-5 md:mb-8 border-l-[3px] border-l-gold pl-5">
+          <h1 className="text-2xl md:text-4xl font-extrabold text-navy mb-1 tracking-tight">재개발 구역 매물</h1>
+          <p className="text-[13px] md:text-base text-gold font-medium">
             {loading ? '데이터 로딩 중...' : latestDate ? `${latestDate} 업데이트` : '매물 정보'}
           </p>
         </header>
 
         {/* Toolbar */}
-        <div className="flex gap-2 mb-4 bg-card border border-border p-2.5 overflow-x-auto scrollbar-hide">
+        <div className="flex gap-2 mb-5 bg-card border border-border p-2 overflow-x-auto scrollbar-hide">
           <button
             onClick={() => setShowStats(!showStats)}
-            className={`flex items-center gap-1.5 text-[13px] font-bold px-4 py-2 cursor-pointer transition-all whitespace-nowrap rounded-none border ${showStats ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-secondary/50 border-border text-foreground hover:bg-primary/5 hover:border-primary'}`}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 cursor-pointer transition-all whitespace-nowrap rounded-none border ${showStats ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-secondary/50 border-border text-foreground hover:bg-primary/5 hover:border-primary'}`}
           >
-            <BarChart3 size={15} />
+            <BarChart3 size={14} />
             통계
           </button>
           <button
             onClick={() => setShowBadgeModal(true)}
-            className="flex items-center gap-1.5 bg-secondary/50 border border-border text-foreground text-[13px] font-bold px-4 py-2 cursor-pointer transition-all hover:bg-primary/5 hover:border-primary whitespace-nowrap rounded-none"
+            className="flex items-center gap-1.5 bg-secondary/50 border border-border text-foreground text-xs font-semibold px-3.5 py-2 cursor-pointer transition-all hover:bg-primary/5 hover:border-primary whitespace-nowrap rounded-none"
           >
-            <BookOpen size={15} />
+            <BookOpen size={14} />
             아이콘 의미
           </button>
           <button
             onClick={() => { setCompareIds([]); }}
-            className={`flex items-center gap-1.5 text-[13px] font-bold px-4 py-2 cursor-pointer transition-all whitespace-nowrap rounded-none border ${compareIds.length > 0 ? 'bg-accent text-accent-foreground border-accent shadow-md' : 'bg-secondary/50 border-border text-foreground hover:bg-primary/5 hover:border-primary'}`}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3.5 py-2 cursor-pointer transition-all whitespace-nowrap rounded-none border ${compareIds.length > 0 ? 'bg-accent text-accent-foreground border-accent shadow-md' : 'bg-secondary/50 border-border text-foreground hover:bg-primary/5 hover:border-primary'}`}
           >
-            <GitCompare size={15} />
+            <GitCompare size={14} />
             {compareIds.length > 0 ? `비교 초기화 (${compareIds.length})` : '매물 비교'}
           </button>
         </div>
