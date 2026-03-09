@@ -88,6 +88,12 @@ const Index = () => {
       if (sortOption === 'priceLow') return pa - pb;
       if (sortOption === 'pyungLow') return (pa / aa) - (pb / ab);
       if (sortOption === 'landHigh') return parseFloat(b['공급']) - parseFloat(a['공급']);
+      if (sortOption === 'landHighDesc') return parseFloat(b['공급']) - parseFloat(a['공급']);
+      if (sortOption === 'newest') {
+        const da = parseListingDate(a['날짜']);
+        const db = parseListingDate(b['날짜']);
+        return (db?.getTime() || 0) - (da?.getTime() || 0);
+      }
       return 0;
     });
 
