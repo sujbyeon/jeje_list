@@ -1,10 +1,12 @@
 import { ListingItem } from '@/types/listing';
 import { TypeBadge } from './TypeBadge';
+import { HighlightText } from './HighlightText';
 import { toast } from 'sonner';
 import {
   toNumMan, formatPrice, formatDateShort, getArea, getPyungPrice,
   getFloorDisplay, getBadges, isDetachedOrCommercial, openNaverMap, shareKakao
 } from '@/lib/listing-utils';
+import { isNewListing } from '@/lib/date-utils';
 import type { ZoneStats } from '@/lib/listing-utils';
 
 interface ListingCardProps {
@@ -15,14 +17,16 @@ interface ListingCardProps {
   isCompareMode?: boolean;
   isSelected?: boolean;
   onCompareToggle?: () => void;
+  searchTerm?: string;
 }
 
-export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode, isSelected, onCompareToggle }: ListingCardProps) {
+export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode, isSelected, onCompareToggle, searchTerm = '' }: ListingCardProps) {
   const price = toNumMan(item['거래가(숫자)']);
   const pyungPrice = getPyungPrice(item);
   const areaType = isDetachedOrCommercial(item) ? '대지' : '전용';
   const floorStr = getFloorDisplay(item);
   const { isUrgent, isCheap, plusType } = getBadges(item, zoneStats);
+  const isNew = isNewListing(item['날짜']);
   const dateStr = item['날짜'] ? `📅 ${formatDateShort(item['날짜'])}` : '';
   const tags = item['태그'] || '';
   const desc = item['물건설명'] || '';
@@ -48,14 +52,15 @@ export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode
       {/* Subject */}
       <div className="flex-1 min-w-0">
         <div className="text-sm md:text-[15px] font-bold text-navy mb-1 flex items-center gap-1.5 flex-wrap pr-10 md:pr-0">
-          {item['물건명']}
+          <HighlightText text={item['물건명']} highlight={searchTerm} />
           <TypeBadge type={item['사업유형']} />
+          {isNew && <span className="text-[11px] font-bold text-blue-600">🆕 신규</span>}
           {plusType && <span className="text-[11px] font-bold text-purple-600">💜 1+1 {plusType}</span>}
           {isUrgent && <span className="text-[11px] font-bold text-red-600">🚨 급매</span>}
           {isCheap && <span className="text-[11px] font-bold text-green-600">💚 저렴</span>}
         </div>
         <div className="text-xs text-muted-foreground font-normal leading-relaxed">
-          대지 {item['공급']}㎡ · 전용 {item['전용']}㎡{floorStr ? ` · ${floorStr}` : ''} · {tags}{dateStr ? ` · ${dateStr}` : ''}
+          대지 {item['공급']}㎡ · 전용 {item['전용']}㎡{floorStr ? ` · ${floorStr}` : ''} · <HighlightText text={tags} highlight={searchTerm} />{dateStr ? ` · ${dateStr}` : ''}
         </div>
         {desc && <div className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{desc}</div>}
       </div>

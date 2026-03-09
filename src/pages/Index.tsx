@@ -3,6 +3,7 @@ import { BarChart3, BookOpen, GitCompare } from 'lucide-react';
 import { useListings, useFavorites } from '@/hooks/useListings';
 import { SortOption, BadgeFilterType } from '@/types/listing';
 import { toNumMan, formatPrice, getArea, getUnitPrice, computeZoneStats, getLatestDate } from '@/lib/listing-utils';
+import { parseListingDate } from '@/lib/date-utils';
 import { FilterPanel } from '@/components/FilterPanel';
 import { SearchBar } from '@/components/SearchBar';
 import { StatsBanner } from '@/components/StatsBanner';
@@ -87,6 +88,12 @@ const Index = () => {
       if (sortOption === 'priceLow') return pa - pb;
       if (sortOption === 'pyungLow') return (pa / aa) - (pb / ab);
       if (sortOption === 'landHigh') return parseFloat(b['공급']) - parseFloat(a['공급']);
+      if (sortOption === 'landHighDesc') return parseFloat(b['공급']) - parseFloat(a['공급']);
+      if (sortOption === 'newest') {
+        const da = parseListingDate(a['날짜']);
+        const db = parseListingDate(b['날짜']);
+        return (db?.getTime() || 0) - (da?.getTime() || 0);
+      }
       return 0;
     });
 
@@ -197,6 +204,23 @@ const Index = () => {
           <StatsCharts data={filtered} />
         )}
 
+        {/* Badge filter breadcrumb */}
+        {badgeFilter && (
+          <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-accent/10 border border-accent/20 text-sm font-semibold">
+            <span>
+              {badgeFilter === 'urgent' && '🚨 급매만 보는 중'}
+              {badgeFilter === 'cheap' && '💚 저렴 매물만 보는 중'}
+              {badgeFilter === 'plus' && '💜 1+1 매물만 보는 중'}
+            </span>
+            <button
+              onClick={() => setBadgeFilter(null)}
+              className="ml-auto text-xs px-2 py-0.5 bg-muted hover:bg-muted-foreground/20 border border-border cursor-pointer transition-colors font-sans"
+            >
+              ✕ 해제
+            </button>
+          </div>
+        )}
+
         {/* Listings */}
         <div className="grid gap-3">
           {loading ? (
@@ -217,6 +241,7 @@ const Index = () => {
                 isCompareMode={true}
                 isSelected={compareIds.includes(item._id)}
                 onCompareToggle={() => toggleCompareId(item._id)}
+                searchTerm={searchTerm}
               />
             ))
           )}
