@@ -1,10 +1,12 @@
 import { ListingItem } from '@/types/listing';
 import { TypeBadge } from './TypeBadge';
+import { HighlightText } from './HighlightText';
 import { toast } from 'sonner';
 import {
   toNumMan, formatPrice, formatDateShort, getArea, getPyungPrice,
   getFloorDisplay, getBadges, isDetachedOrCommercial, openNaverMap, shareKakao
 } from '@/lib/listing-utils';
+import { isNewListing } from '@/lib/date-utils';
 import type { ZoneStats } from '@/lib/listing-utils';
 
 interface ListingCardProps {
