@@ -20,7 +20,7 @@ interface ListingCardProps {
   searchTerm?: string;
 }
 
-export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode, isSelected, onCompareToggle }: ListingCardProps) {
+export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode, isSelected, onCompareToggle, searchTerm = '' }: ListingCardProps) {
   const price = toNumMan(item['거래가(숫자)']);
   const pyungPrice = getPyungPrice(item);
   const areaType = isDetachedOrCommercial(item) ? '대지' : '전용';
