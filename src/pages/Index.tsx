@@ -204,6 +204,23 @@ const Index = () => {
           <StatsCharts data={filtered} />
         )}
 
+        {/* Badge filter breadcrumb */}
+        {badgeFilter && (
+          <div className="flex items-center gap-2 mb-3 px-3 py-2 bg-accent/10 border border-accent/20 text-sm font-semibold">
+            <span>
+              {badgeFilter === 'urgent' && '🚨 급매만 보는 중'}
+              {badgeFilter === 'cheap' && '💚 저렴 매물만 보는 중'}
+              {badgeFilter === 'plus' && '💜 1+1 매물만 보는 중'}
+            </span>
+            <button
+              onClick={() => setBadgeFilter(null)}
+              className="ml-auto text-xs px-2 py-0.5 bg-muted hover:bg-muted-foreground/20 border border-border cursor-pointer transition-colors font-sans"
+            >
+              ✕ 해제
+            </button>
+          </div>
+        )}
+
         {/* Listings */}
         <div className="grid gap-3">
           {loading ? (
