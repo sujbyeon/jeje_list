@@ -26,6 +26,7 @@ export function ListingCard({ item, isFav, onToggleFav, zoneStats, isCompareMode
   const areaType = isDetachedOrCommercial(item) ? '대지' : '전용';
   const floorStr = getFloorDisplay(item);
   const { isUrgent, isCheap, plusType } = getBadges(item, zoneStats);
+  const isNew = isNewListing(item['날짜']);
   const dateStr = item['날짜'] ? `📅 ${formatDateShort(item['날짜'])}` : '';
   const tags = item['태그'] || '';
   const desc = item['물건설명'] || '';
