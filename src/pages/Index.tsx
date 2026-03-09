@@ -241,6 +241,7 @@ const Index = () => {
                 isCompareMode={true}
                 isSelected={compareIds.includes(item._id)}
                 onCompareToggle={() => toggleCompareId(item._id)}
+                searchTerm={searchTerm}
               />
             ))
           )}
